@@ -1,0 +1,47 @@
+---
+import '@fontsource-variable/literata';
+import '@fontsource-variable/alegreya';
+import '@fontsource-variable/golos-text';
+import '../styles/global.css';
+import { url } from '../lib/url';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+const { title, description = 'Татар халык әкиятләрен уку өчен тыныч урын.' } = Astro.props;
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : Astro.url.pathname;
+---
+<!doctype html>
+<html lang="tt">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={url("/favicon.svg")} type="image/svg+xml" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <!-- Настройки читателя применяются до первой отрисовки, иначе моргает тема. -->
+    <script is:inline>
+      (function () {
+        try {
+          var r = document.documentElement;
+          var get = function (k, d) { return localStorage.getItem(k) || d; };
+          var theme = get('ak.theme', 'auto');
+          if (theme !== 'auto') r.setAttribute('data-theme', theme);
+          r.setAttribute('data-size', get('ak.size', 'm'));
+          r.setAttribute('data-width', get('ak.width', 'narrow'));
+          r.setAttribute('data-face', get('ak.face', 'serif'));
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Төп эчтәлеккә күчү</a>
+    <slot />
+  </body>
+</html>

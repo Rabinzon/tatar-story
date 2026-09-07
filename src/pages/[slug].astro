@@ -1,0 +1,146 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Tulip from '../components/Tulip.astro';
+import ReaderSettings from '../components/ReaderSettings.astro';
+import Gloss from '../components/Gloss.astro';
+import Note from '../components/Note.astro';
+import Sep from '../components/Sep.astro';
+import Verse from '../components/Verse.astro';
+import { readingStats, formatWords } from '../lib/reading';
+import { url } from '../lib/url';
+import { TAGS } from '../lib/tags';
+
+export async function getStaticPaths() {
+  const tales = (await getCollection('tales')).sort(
+    (a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title, 'ru'),
+  );
+  return tales.map((tale, i) => ({
+    params: { slug: tale.id },
+    props: { tale, next: tales[(i + 1) % tales.length] },
+  }));
+}
+
+const { tale, next } = Astro.props;
+const { Content } = await render(tale);
+const stats = readingStats(tale.body ?? '');
+const labels = new Map(TAGS.map((tag) => [tag.key, tag.label]));
+const tags = tale.data.tags.map((key) => labels.get(key) ?? key);
+---
+
+<Base title={`${tale.data.title} — Әкиятләр`} description={tale.data.summary}>
+  <div class="topbar">
+    <div class="wrap topbar-in">
+      <a class="tb-btn" href={url("/")}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M15 5l-7 7 7 7"></path>
+        </svg>
+        Китапханә
+      </a>
+      <span class="tb-title" data-tb-title>{tale.data.title}</span>
+      <button type="button" class="tb-btn" data-open-settings aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path>
+          <circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle>
+        </svg>
+        Уку
+      </button>
+    </div>
+    <div class="progress" data-progress></div>
+  </div>
+
+  <article class="wrap" id="main">
+    <div class="a-head">
+      <span class="eyebrow"><Tulip size={11} /> {tale.data.kind}</span>
+      <h1>{tale.data.title}</h1>
+      <p class="a-sub" lang="ru">{tale.data.titleRu}</p>
+      <div class="a-meta">
+        <span>{stats.minutes} минут уку</span><span class="dot"></span>
+        <span>{formatWords(stats.words)} сүз</span>
+        {tags.length > 0 && <><span class="dot"></span><span>{tags.join(' · ')}</span></>}
+      </div>
+    </div>
+
+    <div class="prose">
+      <Content components={{ Gloss, Note, Sep, Verse }} />
+      <div class="a-end">
+        <div class="rule"><Tulip size={20} /></div>
+        <p class="fin">Әкият шуның белән бетте</p>
+      </div>
+    </div>
+
+    {tale.data.source && (
+      <p class="a-source" lang="ru">Источник текста: {tale.data.source}</p>
+    )}
+
+    {next && next.id !== tale.id && (
+      <a class="next" href={url(`/${next.id}/`)}>
+        <div>
+          <span class="eyebrow">Киләсе әкият</span>
+          <strong>{next.data.title}</strong>
+        </div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M9 5l7 7-7 7"></path>
+        </svg>
+      </a>
+    )}
+  </article>
+
+  <ReaderSettings />
+</Base>
+
+<script>
+  /* Прогресс чтения и название в шапке. */
+  const bar = document.querySelector<HTMLElement>('[data-progress]');
+  const title = document.querySelector<HTMLElement>('[data-tb-title]');
+
+  function onScroll() {
+    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+    const ratio = scrollable > 0 ? Math.min(1, window.scrollY / scrollable) : 0;
+    if (bar) bar.style.width = `${(ratio * 100).toFixed(1)}%`;
+    title?.classList.toggle('on', window.scrollY > 140);
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  onScroll();
+
+  /* Перевод слова по тапу или с клавиатуры. */
+  let popover: HTMLElement | null = null;
+  let current: HTMLElement | null = null;
+
+  function hide() {
+    popover?.remove();
+    popover = null;
+    current = null;
+  }
+
+  function show(word: HTMLElement) {
+    hide();
+    popover = document.createElement('div');
+    popover.className = 'pop';
+    popover.textContent = word.dataset.ru ?? '';
+    document.body.append(popover);
+    current = word;
+
+    const anchor = word.getBoundingClientRect();
+    const box = popover.getBoundingClientRect();
+    const left = Math.min(Math.max(8, anchor.left + anchor.width / 2 - box.width / 2),
+      window.innerWidth - box.width - 8);
+    popover.style.left = `${left}px`;
+    popover.style.top = `${window.scrollY + anchor.top - box.height - 9}px`;
+    popover.style.setProperty('--px', `${anchor.left + anchor.width / 2 - left}px`);
+  }
+
+  document.addEventListener('click', (event) => {
+    const word = (event.target as HTMLElement).closest<HTMLElement>('.gloss');
+    if (!word) return hide();
+    if (word === current) hide();
+    else show(word);
+  });
+  document.addEventListener('focusin', (event) => {
+    const word = (event.target as HTMLElement).closest<HTMLElement>('.gloss');
+    if (word) show(word);
+  });
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape') hide(); });
+  window.addEventListener('scroll', hide, { passive: true });
+</script>

@@ -1,0 +1,104 @@
+---
+/**
+ * Лист настроек чтения. Открывается любой кнопкой с [data-open-settings].
+ * Значения живут в localStorage и применяются к <html> до первой отрисовки
+ * (см. инлайновый скрипт в Base.astro).
+ */
+---
+<div class="sheet-bg" data-sheet-bg hidden></div>
+<div class="sheet" role="dialog" aria-modal="true" aria-label="Уку көйләүләре" data-sheet hidden>
+  <div class="grip"></div>
+  <div class="row">
+    <span class="lbl">Тема</span>
+    <div class="seg" data-seg="theme">
+      <button type="button" data-v="auto" aria-pressed="true">Авто</button>
+      <button type="button" data-v="light" aria-pressed="false">Якты</button>
+      <button type="button" data-v="dark" aria-pressed="false">Караңгы</button>
+    </div>
+  </div>
+  <div class="row">
+    <span class="lbl">Хәреф зурлыгы</span>
+    <div class="seg" data-seg="size">
+      <button type="button" data-v="s" class="aa" aria-pressed="false">Аа</button>
+      <button type="button" data-v="m" class="aa m" aria-pressed="true">Аа</button>
+      <button type="button" data-v="l" class="aa l" aria-pressed="false">Аа</button>
+    </div>
+  </div>
+  <div class="row">
+    <span class="lbl">Юл киңлеге</span>
+    <div class="seg" data-seg="width">
+      <button type="button" data-v="narrow" aria-pressed="true">Тар</button>
+      <button type="button" data-v="wide" aria-pressed="false">Киң</button>
+    </div>
+  </div>
+  <div class="row">
+    <span class="lbl">Гарнитура</span>
+    <div class="seg" data-seg="face">
+      <button type="button" data-v="serif" aria-pressed="true">Антиква</button>
+      <button type="button" data-v="sans" aria-pressed="false">Гротеск</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const sheet = document.querySelector<HTMLElement>('[data-sheet]');
+  const backdrop = document.querySelector<HTMLElement>('[data-sheet-bg]');
+  if (sheet && backdrop) {
+    const SETTINGS = [
+      { name: 'theme', attr: 'data-theme', fallback: 'auto' },
+      { name: 'size', attr: 'data-size', fallback: 'm' },
+      { name: 'width', attr: 'data-width', fallback: 'narrow' },
+      { name: 'face', attr: 'data-face', fallback: 'serif' },
+    ];
+
+    const read = (key: string, fallback: string) => {
+      try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; }
+    };
+    const write = (key: string, value: string) => {
+      try { localStorage.setItem(key, value); } catch { /* приватный режим — не беда */ }
+    };
+
+    for (const { name, attr, fallback } of SETTINGS) {
+      const seg = sheet.querySelector<HTMLElement>(`[data-seg="${name}"]`);
+      if (!seg) continue;
+
+      const apply = (value: string) => {
+        if (attr === 'data-theme' && value === 'auto') root.removeAttribute(attr);
+        else root.setAttribute(attr, value);
+        seg.querySelectorAll<HTMLButtonElement>('button').forEach((b) => {
+          b.setAttribute('aria-pressed', String(b.dataset.v === value));
+        });
+      };
+
+      apply(read(`ak.${name}`, fallback));
+      seg.addEventListener('click', (event) => {
+        const button = (event.target as HTMLElement).closest<HTMLButtonElement>('button');
+        if (!button?.dataset.v) return;
+        write(`ak.${name}`, button.dataset.v);
+        apply(button.dataset.v);
+      });
+    }
+
+    let opener: HTMLElement | null = null;
+    const toggle = (open: boolean) => {
+      sheet.hidden = !open;
+      backdrop.hidden = !open;
+      if (open) sheet.querySelector('button')?.focus();
+      else opener?.focus();
+    };
+
+    document.addEventListener('click', (event) => {
+      const trigger = (event.target as HTMLElement).closest<HTMLElement>('[data-open-settings]');
+      if (trigger) {
+        opener = trigger;
+        toggle(true);
+      } else if ((event.target as HTMLElement).closest('[data-sheet-bg]')) {
+        toggle(false);
+      }
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !sheet.hidden) toggle(false);
+    });
+  }
+</script>

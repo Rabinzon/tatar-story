@@ -1,0 +1,17 @@
+---
+import Base from '../layouts/Base.astro';
+import Tulip from '../components/Tulip.astro';
+import { url } from '../lib/url';
+---
+<Base title="Бит табылмады — Әкиятләр">
+  <main class="wrap" id="main" style="padding-block:6rem 4rem;text-align:center">
+    <div class="sep"><Tulip size={26} /></div>
+    <h1 style="font-family:var(--display);font-size:var(--step-3);margin:.6rem 0 .4rem">
+      Мондый бит юк
+    </h1>
+    <p style="color:var(--ink-2);line-height:1.6">
+      Бәлки әкият башка исем астында сакланадыр.
+    </p>
+    <p style="margin-top:1.6rem"><a href={url("/")} class="tb-btn" style="display:inline-flex">Китапханәгә кайту</a></p>
+  </main>
+</Base>

@@ -1,0 +1,6 @@
+---
+/** Слово с переводом: <Gloss ru="белка">тиен</Gloss> */
+interface Props { ru: string; }
+const { ru } = Astro.props;
+---
+<button type="button" class="gloss" data-ru={ru} aria-label={`Тәрҗемә: ${ru}`}><slot /></button>

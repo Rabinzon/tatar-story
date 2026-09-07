@@ -54,7 +54,7 @@ const haystack = (tale: (typeof tales)[number]) =>
     {featured && (
       <a class="lead-card" href={url(`/${featured.id}/`)}
          data-tags={featured.data.tags.join(' ')} data-title={haystack(featured)}>
-        <span class="badge"><Tulip size={11} /> Атна әкияте</span>
+        <span class="badge"><Tulip size={11} /> Башлау өчен</span>
         <h3>{featured.data.title}</h3>
         <div class="ru" lang="ru">{featured.data.titleRu}</div>
         <p>{featured.data.summary}</p>

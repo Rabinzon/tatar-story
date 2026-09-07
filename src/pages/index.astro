@@ -28,7 +28,14 @@ const haystack = (tale: (typeof tales)[number]) =>
         <Tulip size={26} class="mark" />
         <span class="eyebrow">Татар халык иҗаты</span>
       </span>
-      <button type="button" class="tb-btn" data-open-settings aria-haspopup="dialog">Уку</button>
+      <button type="button" class="tb-btn" data-open-settings aria-haspopup="dialog"
+              aria-label="Уку көйләүләре">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path>
+          <circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle>
+        </svg>
+        Көйләү
+      </button>
     </div>
     <h1>Әкиятләр китапханәсе</h1>
     <p>Татар халык әкиятләрен уку өчен тыныч урын. Реклама юк, комачаулау юк — тик текст кына.</p>

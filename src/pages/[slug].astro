@@ -38,12 +38,13 @@ const tags = tale.data.tags.map((key) => labels.get(key) ?? key);
         Китапханә
       </a>
       <span class="tb-title" data-tb-title>{tale.data.title}</span>
-      <button type="button" class="tb-btn" data-open-settings aria-haspopup="dialog">
+      <button type="button" class="tb-btn" data-open-settings aria-haspopup="dialog"
+              aria-label="Уку көйләүләре">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path>
           <circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle>
         </svg>
-        Уку
+        Көйләү
       </button>
     </div>
     <div class="progress" data-progress></div>

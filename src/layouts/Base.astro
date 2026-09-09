@@ -34,7 +34,7 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : As
           var theme = get('ak.theme', 'auto');
           if (theme !== 'auto') r.setAttribute('data-theme', theme);
           r.setAttribute('data-size', get('ak.size', 'm'));
-          r.setAttribute('data-width', get('ak.width', 'narrow'));
+          r.setAttribute('data-width', get('ak.width', 'wide'));
           r.setAttribute('data-face', get('ak.face', 'serif'));
         } catch (e) {}
       })();

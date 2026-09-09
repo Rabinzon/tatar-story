@@ -28,8 +28,8 @@
   <div class="row">
     <span class="lbl">Текст киңлеге</span>
     <div class="seg" data-seg="width">
-      <button type="button" data-v="narrow" aria-pressed="true">Тар</button>
-      <button type="button" data-v="wide" aria-pressed="false">Киң</button>
+      <button type="button" data-v="narrow" aria-pressed="false">Тар</button>
+      <button type="button" data-v="wide" aria-pressed="true">Киң</button>
     </div>
   </div>
   <div class="row">
@@ -49,7 +49,7 @@
     const SETTINGS = [
       { name: 'theme', attr: 'data-theme', fallback: 'auto' },
       { name: 'size', attr: 'data-size', fallback: 'm' },
-      { name: 'width', attr: 'data-width', fallback: 'narrow' },
+      { name: 'width', attr: 'data-width', fallback: 'wide' },
       { name: 'face', attr: 'data-face', fallback: 'serif' },
     ];
 

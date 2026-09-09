@@ -4,10 +4,11 @@ import mdx from '@astrojs/mdx';
 import { unified } from '@astrojs/markdown-remark';
 import { rehypeDialogue } from './src/plugins/rehype-dialogue.mjs';
 
-// Домен и подпапка задаются окружением: локально — корень,
-// на GitHub Pages — https://<user>.github.io/<repo>/ (см. .github/workflows/deploy.yml).
-const site = process.env.SITE_URL ?? 'http://localhost:4321';
-const base = process.env.BASE_PATH ?? '/';
+// Адрес публикации: проектная страница GitHub Pages.
+// Для своего домена достаточно поменять site и убрать base
+// (или переопределить их переменными окружения на сборке).
+const site = process.env.SITE_URL ?? 'https://rabinzon.github.io';
+const base = process.env.BASE_PATH ?? '/tatar-story';
 
 export default defineConfig({
   site,

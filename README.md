@@ -73,11 +73,17 @@ order: 7                     # меньше — выше в списке
 
 ## Деплой
 
-`.github/workflows/deploy.yml` собирает сайт и публикует на GitHub Pages при
-пуше. Домен и подпапка передаются сборке через `SITE_URL` и `BASE_PATH`, поэтому
-сайт одинаково работает и в корне домена, и в `/<repo>/`. Если в настройках
-репозитория Pages ещё не включены, откройте **Settings → Pages** и выберите
-источник **GitHub Actions**.
+`.github/workflows/deploy.yml` — рецепт из [документации
+Astro](https://docs.astro.build/en/guides/deploy/github/): `withastro/action@v5`
+собирает сайт, `actions/deploy-pages@v4` публикует его.
+
+Адрес задан в `astro.config.mjs` (`site` + `base`) и по умолчанию указывает на
+`https://rabinzon.github.io/tatar-story/`. Для своего домена поменяйте `site` и
+уберите `base` — либо передайте сборке `SITE_URL` и `BASE_PATH`.
+
+Один раз нужно вручную открыть **Settings → Pages** и выбрать источник **GitHub
+Actions**: создать сам сайт Pages токен воркфлоу не вправе, этого шага требует и
+документация Astro.
 
 ## О текстах
 

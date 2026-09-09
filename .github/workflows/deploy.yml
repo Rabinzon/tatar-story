@@ -1,3 +1,4 @@
+# Рецепт из документации Astro: https://docs.astro.build/en/guides/deploy/github/
 name: Deploy to GitHub Pages
 
 on:
@@ -21,22 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - id: pages
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
-      - run: npm run build
-        env:
-          SITE_URL: ${{ steps.pages.outputs.origin }}
-          BASE_PATH: ${{ steps.pages.outputs.base_path }}
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
+      - uses: withastro/action@v5
 
   deploy:
     needs: build
